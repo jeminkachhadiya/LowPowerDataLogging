@@ -1,0 +1,57 @@
+Assumptions and Planning for Low Power Datalogging.
+
+1. Designing in a way to run microcontroller on battery.
+2. To meet our low-power goals, a better choice is a Arduino Nano (ATmega328P @ 5V, 16 MHz) and 3.3V Arduino-compatible board without these overheads.
+    1. Why 3.3 V? Running at 3.3 V ensures compatibility with the SD card’s voltage and avoids power lost in level shifters or regulators. The ATmega328P can run at 8 MHz on 3.3 V with full Arduino support. This means we can directly interface the SD card and also benefit from lower active current than a 5 V/16 MHz setup. In summary, using a bare-bones 3.3 V microcontroller (like a Pro Mini) instead of a stock Nano eliminates unnecessary draw from onboard peripherals and is highly recommended for long battery life.
+3. For unique file name, I thought about 2 options: 
+    1. using the timestamp: It will be unique even after we restart the program.
+    2. file counter: Files are unique until we restart the program.
+    We are choosing option 1 for this case.
+
+
+Architecture_1:
+
+                  VCC (3.3V)
+                     |
+                     |
+                    10kΩ
+                     |
+                     |
+GPIO Pin -------|Gate
+                |    P-Channel MOSFET
+                |Source    |Drain
+                     |     |
+                     |     |
+                     |    10kΩ
+                     |     |
+                     |     |
+                     ------+------ To SD Card VCC
+                           |
+                           |
+                         0.1μF
+                           |
+                           |
+                          GND
+
+
+
+Architecture_2:
+
+[ Battery +3.3V ]
+      |
+     [ P-Channel MOSFET ]
+        - Source (S) → 3.3V Battery +
+        - Drain (D) → SD Card VCC
+        - Gate (G)  → 100kΩ pull-up to 3.3V, and GPIO (D8) from MCU
+      |
+[ Microcontroller (Arduino Pro Mini 3.3V 8MHz) ]
+      |
+      ├── D8 → MOSFET Gate control
+      ├── D10 → SD card CS (Chip Select)
+      ├── D11 → SD card MOSI
+      ├── D12 → SD card MISO
+      ├── D13 → SD card SCK
+      └── GND → Common Ground
+[ SD Card Module ]
+      |
+    (VCC, GND, CS, MOSI, MISO, SCK)
