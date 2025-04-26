@@ -47,7 +47,7 @@ It wakes up **every 10 minutes**, powers on the SD card, creates a **uniquely ti
                   VCC (3.3V)
                      |
                      |
-                    10kΩ
+                    100kΩ
                      |
                      |
 GPIO Pin -------|Gate
@@ -55,13 +55,12 @@ GPIO Pin -------|Gate
                 |Source    |Drain
                      |     |
                      |     |
-                     |    10kΩ
+                     |    100kΩ
                      |     |
                      |     |
                      ------+------ To SD Card VCC
                            |
                            |
-                         0.1μF
                            |
                            |
                           GND
